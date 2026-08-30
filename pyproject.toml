@@ -1,0 +1,11 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+[project]
+name = "sahajgit"
+version = "0.1.0"
+description = "A Git clone built from scratch"
+[project.scripts]
+sahajgit = "sahajgit.cli:main"
+[tool.setuptools.packages.find]
+include = ["sahajgit*"]

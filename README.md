@@ -1,5 +1,9 @@
 # SahajGit
 
+> **Meta-project:** This version control system is implemented in SahajCore,
+> a programming language I also built from scratch.
+
+
 A Git clone **written in SahajCore** (a custom programming language).
 
 This is a meta-project: a version control system implemented in a language I also built from scratch.

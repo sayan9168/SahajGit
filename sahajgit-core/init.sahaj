@@ -1,0 +1,10 @@
+fn git_init() {
+    fs.mkdir(".sahajgit")
+    fs.mkdir(".sahajgit/objects")
+    fs.mkdir(".sahajgit/refs")
+    fs.mkdir(".sahajgit/refs/heads")
+    fs.mkdir(".sahajgit/refs/tags")
+    fs.write(".sahajgit/HEAD", "ref: refs/heads/main\n")
+    print("Initialized empty SahajGit repository in .sahajgit/")
+}
+git_init()

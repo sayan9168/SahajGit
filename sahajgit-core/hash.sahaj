@@ -1,0 +1,11 @@
+fn sha1(data) {
+    let h = 7
+    let i = 0
+    while i < len(data) {
+        h = (h * 31 + ord(data[i])) % 1000000007
+        i = i + 1
+    }
+    let s = str(h)
+    while len(s) < 8 { s = "0" + s }
+    return s
+}

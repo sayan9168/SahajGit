@@ -1,0 +1,36 @@
+import "sahajgit-core/hash.sahaj"
+fn get_current_branch() {
+    let head = fs.read(".sahajgit/HEAD")
+    if head.startsWith("ref: ") {
+        let parts = head.split("/")
+        return parts[len(parts) - 1].strip()
+    }
+    return head.strip()
+}
+fn commit(message) {
+    if not fs.exists(".sahajgit/index") { print("Nothing to commit"); return }
+    let index = json.parse(fs.read(".sahajgit/index"))
+    let tree_data = json.stringify(index)
+    let tree = "tree " + str(len(tree_data)) + "\n" + tree_data
+    let tree_hash = sha1(tree)
+    let tdir = ".sahajgit/objects/" + tree_hash.slice(0, 2)
+    fs.mkdir(tdir)
+    fs.write(tdir + "/" + tree_hash.slice(2), tree)
+    let branch = get_current_branch()
+    let ref_path = ".sahajgit/refs/heads/" + branch
+    let parent = null
+    if fs.exists(ref_path) { parent = fs.read(ref_path).strip() }
+    let commit_obj = {"tree": tree_hash, "parent": parent, "author": sys.user(), "timestamp": sys.time(), "message": message}
+    let commit_data = json.stringify(commit_obj)
+    let commit_blob = "commit " + str(len(commit_data)) + "\n" + commit_data
+    let commit_hash = sha1(commit_blob)
+    let cdir = ".sahajgit/objects/" + commit_hash.slice(0, 2)
+    fs.mkdir(cdir)
+    fs.write(cdir + "/" + commit_hash.slice(2), commit_blob)
+    fs.write(ref_path, commit_hash + "\n")
+    print("[" + branch + " " + commit_hash.slice(0, 7) + "] " + message)
+}
+let args = sys.args
+let msg = "commit"
+if len(args) > 1 and args[0] == "-m" { msg = args[1] }
+commit(msg)

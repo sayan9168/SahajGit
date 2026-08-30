@@ -1,0 +1,16 @@
+import "sahajgit-core/hash.sahaj"
+fn add_file(filepath) {
+    if not fs.exists(filepath) { print("fatal: " + filepath + " not found"); return }
+    let content = fs.read(filepath)
+    let blob = "blob " + str(len(content)) + "\n" + content
+    let hash = sha1(blob)
+    let dir = ".sahajgit/objects/" + hash.slice(0, 2)
+    fs.mkdir(dir)
+    fs.write(dir + "/" + hash.slice(2), blob)
+    let index = {}
+    if fs.exists(".sahajgit/index") { index = json.parse(fs.read(".sahajgit/index")) }
+    index[filepath] = hash
+    fs.write(".sahajgit/index", json.stringify(index))
+    print("Added: " + filepath)
+}
+for f in sys.args { add_file(f) }

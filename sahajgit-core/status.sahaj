@@ -1,0 +1,27 @@
+fn get_current_branch() {
+    let head = fs.read(".sahajgit/HEAD")
+    if head.startsWith("ref: ") {
+        let parts = head.split("/")
+        return parts[len(parts) - 1].strip()
+    }
+    return head.strip()
+}
+fn show_status() {
+    print("On branch " + get_current_branch())
+    let index = {}
+    if fs.exists(".sahajgit/index") { index = json.parse(fs.read(".sahajgit/index")) }
+    let files = fs.listdir(".")
+    let untracked = []
+    for f in files {
+        if f == ".sahajgit" { continue }
+        if not index.has(f) { untracked.push(f) }
+    }
+    if len(untracked) > 0 {
+        print("")
+        print("Untracked files:")
+        for f in untracked { print("  " + f) }
+    } else {
+        print("nothing to commit, working tree clean")
+    }
+}
+show_status()

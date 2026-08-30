@@ -1,0 +1,34 @@
+fn get_current_branch() {
+    let head = fs.read(".sahajgit/HEAD")
+    if head.startsWith("ref: ") {
+        let parts = head.split("/")
+        return parts[len(parts) - 1].strip()
+    }
+    return head.strip()
+}
+fn read_object(hash) {
+    let path = ".sahajgit/objects/" + hash.slice(0, 2) + "/" + hash.slice(2)
+    if not fs.exists(path) { return null }
+    let raw = fs.read(path)
+    let nl = raw.indexOf("\n")
+    return {"type": raw.slice(0, nl).split(" ")[0], "data": raw.slice(nl + 1)}
+}
+fn show_log() {
+    let branch = get_current_branch()
+    let ref_path = ".sahajgit/refs/heads/" + branch
+    if not fs.exists(ref_path) { print("No commits yet"); return }
+    let hash = fs.read(ref_path).strip()
+    while hash != null {
+        let obj = read_object(hash)
+        if obj == null or obj.type != "commit" { break }
+        let c = json.parse(obj.data)
+        print("commit " + hash)
+        print("Author: " + c.author)
+        print("Date:   " + datetime.from_timestamp(c.timestamp))
+        print("")
+        print("    " + c.message)
+        print("")
+        hash = c.parent
+    }
+}
+show_log()
